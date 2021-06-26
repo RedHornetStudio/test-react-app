@@ -16,12 +16,25 @@ const React = (function() {
     C.render();
     return C;
   }
-  return { useState, render };
+  function useEffect(cb, depArray) {
+    const oldDeps = hooks[idx];
+    let hasChanged = true;
+    if(oldDeps) {
+      hasChanged = depArray.some((dep, i) => !Object.is(dep, oldDeps[i]));
+    }
+    if(hasChanged) cb();
+    hooks[idx] = depArray;
+    idx++;
+  }
+  return { useState, render, useEffect };
 })();
 
 function Component() {
   const [count, setCount] = React.useState(1);
   const [text, setText] = React.useState('apple');
+  React.useEffect(() => {
+    console.log('asdjfsa;df');
+  }, [count]);
   return {
     render: () => console.log({ count, text }),
     click: () => setCount(count + 1),
